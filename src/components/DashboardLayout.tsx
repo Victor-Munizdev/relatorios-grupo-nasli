@@ -137,11 +137,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <DropdownMenuContent className="bg-background border z-50" align="end">
                   <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center gap-2">
+                  <DropdownMenuItem onClick={() => navigate("/perfil")} className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     Perfil
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center gap-2">
+                  <DropdownMenuItem onClick={() => navigate("/configuracoes")} className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
                     Configurações
                   </DropdownMenuItem>

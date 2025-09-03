@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import DashboardLayout from "@/components/DashboardLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -18,45 +18,26 @@ const NovaAvariaPage = () => {
   const [formData, setFormData] = useState({
     tipo_avaria: "",
     descricao: "",
-    cliente_id: "",
-    os_id: "",
     gravidade: "Média",
-    data_ocorrencia: ""
+    data_ocorrencia: "",
+    valor_liquido: "",
+    valor_bruto: "",
+    valor_terceiros: ""
   })
   
-  const [clientes, setClientes] = useState<Array<{id: string, nome: string}>>([])
-  const [ordensServico, setOrdensServico] = useState<Array<{id: string, numero_os: string}>>([])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [clientesRes, osRes] = await Promise.all([
-        supabase.from('clientes').select('id, nome'),
-        supabase.from('ordens_servico').select('id, numero_os')
-      ])
-      
-      if (clientesRes.data) setClientes(clientesRes.data)
-      if (osRes.data) setOrdensServico(osRes.data)
-    }
-    fetchData()
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!formData.tipo_avaria.trim() || !formData.descricao.trim()) {
-      toast({
-        title: "Erro",
-        description: "Tipo de avaria e descrição são obrigatórios.",
-        variant: "destructive",
-      })
-      return
-    }
 
     setLoading(true)
     try {
       const avariaData = {
         ...formData,
-        data_ocorrencia: formData.data_ocorrencia ? new Date(formData.data_ocorrencia).toISOString() : new Date().toISOString()
+        data_ocorrencia: formData.data_ocorrencia ? new Date(formData.data_ocorrencia).toISOString() : new Date().toISOString(),
+        valor_liquido: formData.valor_liquido ? parseFloat(formData.valor_liquido) : null,
+        valor_bruto: formData.valor_bruto ? parseFloat(formData.valor_bruto) : null,
+        valor_terceiros: formData.valor_terceiros ? parseFloat(formData.valor_terceiros) : null
       }
 
       const { error } = await supabase
@@ -117,13 +98,12 @@ const NovaAvariaPage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="tipo_avaria">Tipo de Avaria *</Label>
+                  <Label htmlFor="tipo_avaria">Tipo de Avaria</Label>
                   <Input
                     id="tipo_avaria"
                     value={formData.tipo_avaria}
                     onChange={(e) => handleInputChange("tipo_avaria", e.target.value)}
                     placeholder="Digite o tipo de avaria"
-                    required
                   />
                 </div>
 
@@ -134,38 +114,12 @@ const NovaAvariaPage = () => {
                       <SelectValue placeholder="Selecione a gravidade" />
                     </SelectTrigger>
                     <SelectContent className="bg-background border z-50">
+                      <SelectItem value="Muito baixa">Muito baixa</SelectItem>
                       <SelectItem value="Baixa">Baixa</SelectItem>
                       <SelectItem value="Média">Média</SelectItem>
                       <SelectItem value="Alta">Alta</SelectItem>
-                      <SelectItem value="Crítica">Crítica</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cliente_id">Cliente</Label>
-                  <Select value={formData.cliente_id} onValueChange={(value) => handleInputChange("cliente_id", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o cliente" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border z-50">
-                      {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>{cliente.nome}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="os_id">Ordem de Serviço</Label>
-                  <Select value={formData.os_id} onValueChange={(value) => handleInputChange("os_id", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a O.S." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border z-50">
-                      {ordensServico.map((os) => (
-                        <SelectItem key={os.id} value={os.id}>{os.numero_os}</SelectItem>
-                      ))}
+                      <SelectItem value="Muito alta">Muito alta</SelectItem>
+                      <SelectItem value="Grave">Grave</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -179,17 +133,52 @@ const NovaAvariaPage = () => {
                     onChange={(e) => handleInputChange("data_ocorrencia", e.target.value)}
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="valor_liquido">Valor Líquido</Label>
+                  <Input
+                    id="valor_liquido"
+                    type="number"
+                    step="0.01"
+                    value={formData.valor_liquido}
+                    onChange={(e) => handleInputChange("valor_liquido", e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="valor_bruto">Valor Bruto</Label>
+                  <Input
+                    id="valor_bruto"
+                    type="number"
+                    step="0.01"
+                    value={formData.valor_bruto}
+                    onChange={(e) => handleInputChange("valor_bruto", e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="valor_terceiros">Valor de Terceiros</Label>
+                  <Input
+                    id="valor_terceiros"
+                    type="number"
+                    step="0.01"
+                    value={formData.valor_terceiros}
+                    onChange={(e) => handleInputChange("valor_terceiros", e.target.value)}
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição *</Label>
+                <Label htmlFor="descricao">Descrição</Label>
                 <Textarea
                   id="descricao"
                   value={formData.descricao}
                   onChange={(e) => handleInputChange("descricao", e.target.value)}
                   placeholder="Descrição detalhada da avaria"
                   rows={4}
-                  required
                 />
               </div>
 

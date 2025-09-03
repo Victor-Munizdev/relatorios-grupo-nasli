@@ -16,15 +16,15 @@ const NovaOSPage = () => {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    numero_os: "",
+    placa: "",
     tipo_servico: "",
     descricao: "",
     cliente_id: "",
     analista_id: "",
-    prioridade: "Normal",
-    data_prazo: "",
-    valor: ""
+    local_vistoria: "Novas vistorias"
   })
+  
+  const [enableTipoServico, setEnableTipoServico] = useState(false)
   
   const [clientes, setClientes] = useState<Array<{id: string, nome: string}>>([])
   const [analistas, setAnalistas] = useState<Array<{id: string, nome: string}>>([])
@@ -45,10 +45,10 @@ const NovaOSPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.numero_os.trim() || !formData.tipo_servico.trim()) {
+    if (!formData.placa.trim()) {
       toast({
         title: "Erro",
-        description: "Número da OS e tipo de serviço são obrigatórios.",
+        description: "Placa é obrigatória.",
         variant: "destructive",
       })
       return
@@ -57,9 +57,8 @@ const NovaOSPage = () => {
     setLoading(true)
     try {
       const osData = {
-        ...formData,
-        valor: formData.valor ? parseFloat(formData.valor) : null,
-        data_prazo: formData.data_prazo ? new Date(formData.data_prazo).toISOString() : null
+        numero_os: `OS-${Date.now()}`, // Gerar número automático
+        ...formData
       }
 
       const { error } = await supabase
@@ -120,25 +119,38 @@ const NovaOSPage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="numero_os">Número da O.S. *</Label>
+                  <Label htmlFor="placa">Placa *</Label>
                   <Input
-                    id="numero_os"
-                    value={formData.numero_os}
-                    onChange={(e) => handleInputChange("numero_os", e.target.value)}
-                    placeholder="Digite o número da OS"
+                    id="placa"
+                    value={formData.placa}
+                    onChange={(e) => handleInputChange("placa", e.target.value)}
+                    placeholder="Digite a placa do veículo"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tipo_servico">Tipo de Serviço *</Label>
-                  <Input
-                    id="tipo_servico"
-                    value={formData.tipo_servico}
-                    onChange={(e) => handleInputChange("tipo_servico", e.target.value)}
-                    placeholder="Digite o tipo de serviço"
-                    required
-                  />
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="enable_tipo_servico"
+                      checked={enableTipoServico}
+                      onChange={(e) => setEnableTipoServico(e.target.checked)}
+                      className="rounded"
+                    />
+                    <Label htmlFor="enable_tipo_servico">Habilitar Tipo de Serviço</Label>
+                  </div>
+                  {(enableTipoServico || formData.cliente_id) && (
+                    <>
+                      <Label htmlFor="tipo_servico">Tipo de Serviço</Label>
+                      <Input
+                        id="tipo_servico"
+                        value={formData.tipo_servico}
+                        onChange={(e) => handleInputChange("tipo_servico", e.target.value)}
+                        placeholder="Digite o tipo de serviço"
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -170,40 +182,18 @@ const NovaOSPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="prioridade">Prioridade</Label>
-                  <Select value={formData.prioridade} onValueChange={(value) => handleInputChange("prioridade", value)}>
+                  <Label htmlFor="local_vistoria">Local da Vistoria</Label>
+                  <Select value={formData.local_vistoria} onValueChange={(value) => handleInputChange("local_vistoria", value)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione a prioridade" />
+                      <SelectValue placeholder="Selecione o local" />
                     </SelectTrigger>
                     <SelectContent className="bg-background border z-50">
-                      <SelectItem value="Baixa">Baixa</SelectItem>
-                      <SelectItem value="Normal">Normal</SelectItem>
-                      <SelectItem value="Alta">Alta</SelectItem>
-                      <SelectItem value="Urgente">Urgente</SelectItem>
+                      <SelectItem value="Novas vistorias">Novas vistorias</SelectItem>
+                      <SelectItem value="Ordens de serviços">Ordens de serviços</SelectItem>
+                      <SelectItem value="Mesa de análise">Mesa de análise</SelectItem>
+                      <SelectItem value="Finalizados">Finalizados</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="data_prazo">Data Prazo</Label>
-                  <Input
-                    id="data_prazo"
-                    type="datetime-local"
-                    value={formData.data_prazo}
-                    onChange={(e) => handleInputChange("data_prazo", e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="valor">Valor</Label>
-                  <Input
-                    id="valor"
-                    type="number"
-                    step="0.01"
-                    value={formData.valor}
-                    onChange={(e) => handleInputChange("valor", e.target.value)}
-                    placeholder="0.00"
-                  />
                 </div>
               </div>
 
