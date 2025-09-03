@@ -1,73 +1,193 @@
-# Welcome to your Lovable project
+# Sistema de Relatórios - Grupo Nasli
 
-## Project info
+Sistema de gestão e relatórios desenvolvido para o Grupo Nasli, com funcionalidades para gerenciar clientes, analistas, ordens de serviço e avarias.
 
-**URL**: https://lovable.dev/projects/3f0c924f-64ba-4024-a8d0-92f455e76e46
+## 🚀 Tecnologias
 
-## How can I edit this code?
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Backend**: Supabase (Database + Auth + Storage)
+- **Deploy**: Vercel
 
-There are several ways of editing your application.
+## 📋 Funcionalidades
 
-**Use Lovable**
+### Autenticação
+- ✅ Login e cadastro de usuários
+- ✅ Verificação por email
+- ✅ Recuperação de senha
+- ✅ Gestão de perfil com upload de avatar
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3f0c924f-64ba-4024-a8d0-92f455e76e46) and start prompting.
+### Gestão de Dados
+- ✅ **Clientes**: Cadastro, visualização e edição
+- ✅ **Analistas**: Cadastro com especialidades e níveis
+- ✅ **Ordens de Serviço**: Criação com campos personalizáveis
+- ✅ **Avarias**: Registro com diferentes níveis de gravidade
 
-Changes made via Lovable will be committed automatically to this repo.
+### Relatórios
+- 📊 Análise de Ordens
+- 📈 Produtividade de Analistas
+- 🏆 Ranking de Analistas
+- 📋 Relatório de Avarias
+- 🔍 Relatório de Vistorias
 
-**Use your preferred IDE**
+### Configurações
+- 🌓 Modo escuro/claro
+- 👥 Gerenciamento de usuários
+- ⚙️ Configurações do sistema
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🔧 Desenvolvimento Local
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Pré-requisitos
+- Node.js 18+ ou Bun
+- Conta no Supabase
 
-Follow these steps:
+### Instalação
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone o repositório:
+```bash
+git clone <url-do-repositorio>
+cd relatorios-grupo-nasli
 ```
 
-**Edit a file directly in GitHub**
+2. Instale as dependências:
+```bash
+npm install
+# ou
+bun install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Configure as variáveis de ambiente:
+```bash
+# As variáveis já estão configuradas no código
+# VITE_SUPABASE_URL=https://yyatcbxhyyuabmoziliq.supabase.co
+# VITE_SUPABASE_ANON_KEY=<sua-chave-anonima>
+```
 
-**Use GitHub Codespaces**
+4. Execute o projeto:
+```bash
+npm run dev
+# ou
+bun dev
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🚀 Deploy
 
-## What technologies are used for this project?
+### Deploy na Vercel
 
-This project is built with:
+Este projeto está configurado para deploy automático na Vercel.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. **Fork/Clone** este repositório
+2. **Conecte** à sua conta Vercel
+3. **Deploy** será automático usando as configurações do `vercel.json`
 
-## How can I deploy this project?
+### Configurações do Deploy
+- **Build Command**: `npm run build`
+- **Install Command**: `npm install`
+- **Output Directory**: `dist`
+- **Framework**: Vite
 
-Simply open [Lovable](https://lovable.dev/projects/3f0c924f-64ba-4024-a8d0-92f455e76e46) and click on Share -> Publish.
+## 📊 Banco de Dados
 
-## Can I connect a custom domain to my Lovable project?
+### Estrutura das Tabelas
 
-Yes, you can!
+#### usuarios
+- Perfis de usuário com nome, email, cargo
+- Integração com Supabase Auth
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+#### clientes
+- Informações de clientes (nome, CNPJ, contato, endereço)
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+#### analistas
+- Dados dos analistas (nome, email, especialidade, nível)
+
+#### ordens_servico
+- Ordens de serviço com placa, tipo de serviço, local da vistoria
+- Relacionamento com clientes e analistas
+
+#### avarias
+- Registro de avarias com tipo, gravidade, valores
+- Campos opcionais para flexibilidade
+
+### Storage
+- **Bucket avatars**: Fotos de perfil dos usuários
+
+## 🔐 Segurança
+
+- ✅ Row Level Security (RLS) habilitado
+- ✅ Políticas de acesso por usuário
+- ✅ Upload seguro de arquivos
+- ✅ Autenticação via JWT
+
+## 📱 Responsividade
+
+- ✅ Design responsivo para desktop e mobile
+- ✅ Sidebar colapsável
+- ✅ Componentes adaptáveis
+
+## 🎨 Design System
+
+- **Cores**: Sistema de tokens CSS personalizados
+- **Componentes**: shadcn/ui customizados
+- **Tipografia**: Sistema hierárquico
+- **Modo Escuro**: Suporte completo
+
+## 📈 Performance
+
+- ✅ Bundle otimizado com Vite
+- ✅ Lazy loading de componentes
+- ✅ Otimização de imagens
+- ✅ Caching estratégico
+
+## 🛠️ Scripts Disponíveis
+
+```bash
+npm run dev          # Servidor de desenvolvimento
+npm run build        # Build para produção
+npm run preview      # Preview do build
+npm run lint         # Verificação de código
+```
+
+## 📝 Estrutura do Projeto
+
+```
+src/
+├── components/
+│   ├── ui/              # Componentes base (shadcn/ui)
+│   ├── AuthForm.tsx     # Formulário de autenticação
+│   ├── DashboardLayout.tsx
+│   └── reports/         # Componentes de relatórios
+├── pages/               # Páginas da aplicação
+├── hooks/               # Hooks customizados
+├── lib/                 # Utilitários
+├── integrations/
+│   └── supabase/        # Cliente e tipos do Supabase
+└── index.css           # Estilos globais e tokens
+```
+
+## 🔄 Roadmap
+
+- [ ] Filtros avançados nos relatórios
+- [ ] Exportação para PDF/Excel
+- [ ] Notificações em tempo real
+- [ ] Dashboard com métricas
+- [ ] API para integrações externas
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto é propriedade do **Grupo Nasli**.
+
+## 📞 Suporte
+
+Para suporte e dúvidas, entre em contato com a equipe de desenvolvimento.
+
+---
+
+**Desenvolvido com ❤️ para o Grupo Nasli**

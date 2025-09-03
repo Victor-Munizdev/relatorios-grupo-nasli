@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "name": "relatorios-grupo-nasli",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "functions": {
+    "app/**/*": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
+    }
+  ],
+  "env": {
+    "VITE_SUPABASE_URL": "https://yyatcbxhyyuabmoziliq.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5YXRjYnhoeXl1YWJtb3ppbGlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2MTUzMDAsImV4cCI6MjA3MjE5MTMwMH0.0mKuBsBwm-D0XFvTEZ3qb0GZ3Z8OYZbT2grRWyAxIWg"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
