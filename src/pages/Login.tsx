@@ -1,5 +1,5 @@
 import NasliLogo from "@/components/NasliLogo";
-import LoginForm from "@/components/LoginForm";
+import AuthForm from "@/components/AuthForm";
 
 const Login = () => {
   return (
@@ -8,8 +8,8 @@ const Login = () => {
         {/* Logo and Branding */}
         <NasliLogo />
         
-        {/* Login Form */}
-        <LoginForm />
+        {/* Auth Form */}
+        <AuthForm />
         
         {/* Footer */}
         <div className="text-center mt-8">

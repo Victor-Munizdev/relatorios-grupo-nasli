@@ -18,7 +18,7 @@ const NovaAvariaPage = () => {
   const [formData, setFormData] = useState({
     tipo_avaria: "",
     descricao: "",
-    gravidade: "Média",
+    gravidade: "",
     data_ocorrencia: "",
     valor_liquido: "",
     valor_bruto: "",
@@ -29,6 +29,16 @@ const NovaAvariaPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Verificar se pelo menos um campo obrigatório está preenchido
+    if (!formData.tipo_avaria.trim()) {
+      toast({
+        title: "Erro",
+        description: "Tipo de avaria é obrigatório.",
+        variant: "destructive",
+      })
+      return
+    }
 
     setLoading(true)
     try {
@@ -98,12 +108,13 @@ const NovaAvariaPage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="tipo_avaria">Tipo de Avaria</Label>
+                  <Label htmlFor="tipo_avaria">Tipo de Avaria *</Label>
                   <Input
                     id="tipo_avaria"
                     value={formData.tipo_avaria}
                     onChange={(e) => handleInputChange("tipo_avaria", e.target.value)}
                     placeholder="Digite o tipo de avaria"
+                    required
                   />
                 </div>
 

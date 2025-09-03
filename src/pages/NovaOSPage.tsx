@@ -130,16 +130,16 @@ const NovaOSPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="enable_tipo_servico"
-                      checked={enableTipoServico}
-                      onChange={(e) => setEnableTipoServico(e.target.checked)}
-                      className="rounded"
-                    />
-                    <Label htmlFor="enable_tipo_servico">Habilitar Tipo de Serviço</Label>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="enable_tipo_servico"
+                    checked={enableTipoServico}
+                    onChange={(e) => setEnableTipoServico(e.target.checked)}
+                    className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary focus:ring-2"
+                  />
+                  <Label htmlFor="enable_tipo_servico">Habilitar Tipo de Serviço</Label>
+                </div>
                   {(enableTipoServico || formData.cliente_id) && (
                     <>
                       <Label htmlFor="tipo_servico">Tipo de Serviço</Label>

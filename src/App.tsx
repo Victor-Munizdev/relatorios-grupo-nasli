@@ -1,5 +1,6 @@
 import PerfilPage from "./pages/PerfilPage";
 import ConfiguracoesPage from "./pages/ConfiguracoesPage";
+import Login from "./pages/Login";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +30,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/clientes" element={<ClientesPage />} />
             <Route path="/clientes/novo" element={<NovoClientePage />} />
