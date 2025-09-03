@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,10 +11,30 @@ const LoginForm = () => {
     username: "",
     password: ""
   });
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", loginData);
+    
+    // Simulação de autenticação - em produção, conectar com Supabase Auth
+    if (loginData.username && loginData.password) {
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Redirecionando para o dashboard...",
+      });
+      
+      // Redirecionar para o dashboard
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } else {
+      toast({
+        title: "Erro no login",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
