@@ -5,6 +5,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { User, LogOut, Settings, Plus, Eye, Edit, Users, UserCheck, FileText, AlertTriangle, ChevronDown } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -13,13 +16,76 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const [user, setUser] = useState<any>(null)
+  const [userData, setUserData] = useState<any>(null)
 
-  const handleLogout = () => {
-    toast({
-      title: "Logout realizado",
-      description: "Até logo!",
+  useEffect(() => {
+    loadUserData()
+    
+    // Escutar mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate("/")
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        loadUserData()
+      }
     })
-    navigate("/")
+
+    return () => subscription.unsubscribe()
+  }, [navigate])
+
+  const loadUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        navigate("/")
+        return
+      }
+
+      setUser(user)
+
+      // Buscar dados do perfil na tabela usuarios
+      const { data: profile } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (profile) {
+        setUserData(profile)
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      toast({
+        title: "Logout realizado",
+        description: "Até logo!",
+      })
+      navigate("/")
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer logout.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const getUserName = () => {
+    if (userData?.nome) return userData.nome
+    if (user?.email) return user.email.split('@')[0]
+    return "Usuário"
+  }
+
+  const getUserInitials = () => {
+    const name = getUserName()
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   }
 
   return (
@@ -129,13 +195,22 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">Usuário</span>
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="text-xs">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden sm:inline">{getUserName()}</span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-background border z-50" align="end">
-                  <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{getUserName()}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/perfil")} className="flex items-center gap-2">
                     <User className="h-4 w-4" />
