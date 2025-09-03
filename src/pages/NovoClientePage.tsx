@@ -18,21 +18,40 @@ const NovoClientePage = () => {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     nome: "",
-    cnpj: "",
-    email: "",
-    telefone: "",
-    endereco: "",
-    contato_responsavel: "",
-    ativo: true
+    modelo_laudo: "",
+    tipo_servico: "",
+    categoria: ""
   })
+  
+  const [modeloLaudoOptions] = useState([
+    "Vistoria Prévia",
+    "Vistoria Cautelar", 
+    "Vistoria de Transferência",
+    "Vistoria de Sinistro"
+  ])
+  
+  const [tipoServicoOptions] = useState([
+    "Manutenção Preventiva",
+    "Manutenção Corretiva",
+    "Inspeção",
+    "Reparo"
+  ])
+  
+  const categoriaOptions = [
+    "Pesado",
+    "Leve", 
+    "Reboque",
+    "Semi-reboque",
+    "Empilhadeira"
+  ]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.nome.trim()) {
+    if (!formData.nome.trim() || !formData.categoria.trim()) {
       toast({
         title: "Erro",
-        description: "Nome do cliente é obrigatório.",
+        description: "Nome do cliente e categoria são obrigatórios.",
         variant: "destructive",
       })
       return
@@ -96,78 +115,59 @@ const NovoClientePage = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="nome">Nome da Empresa *</Label>
+                  <Label htmlFor="nome">Nome do Cliente *</Label>
                   <Input
                     id="nome"
                     value={formData.nome}
                     onChange={(e) => handleInputChange("nome", e.target.value)}
-                    placeholder="Digite o nome da empresa"
+                    placeholder="Digite o nome do cliente"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cnpj">CNPJ</Label>
-                  <Input
-                    id="cnpj"
-                    value={formData.cnpj}
-                    onChange={(e) => handleInputChange("cnpj", e.target.value)}
-                    placeholder="00.000.000/0000-00"
-                  />
+                  <Label htmlFor="modelo_laudo">Modelo de Laudo</Label>
+                  <Select value={formData.modelo_laudo} onValueChange={(value) => handleInputChange("modelo_laudo", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione ou digite um modelo de laudo" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border z-50">
+                      {modeloLaudoOptions.map((modelo) => (
+                        <SelectItem key={modelo} value={modelo}>{modelo}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="email@exemplo.com"
-                  />
+                  <Label htmlFor="tipo_servico">Tipo de Serviço</Label>
+                  <Select value={formData.tipo_servico} onValueChange={(value) => handleInputChange("tipo_servico", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione ou digite um tipo de serviço" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border z-50">
+                      {tipoServicoOptions.map((tipo) => (
+                        <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="telefone">Telefone</Label>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone}
-                    onChange={(e) => handleInputChange("telefone", e.target.value)}
-                    placeholder="(11) 99999-9999"
-                  />
+                  <Label htmlFor="categoria">Categoria *</Label>
+                  <Select value={formData.categoria} onValueChange={(value) => handleInputChange("categoria", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a categoria" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border z-50">
+                      {categoriaOptions.map((categoria) => (
+                        <SelectItem key={categoria} value={categoria}>{categoria}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="endereco">Endereço</Label>
-                <Textarea
-                  id="endereco"
-                  value={formData.endereco}
-                  onChange={(e) => handleInputChange("endereco", e.target.value)}
-                  placeholder="Endereço completo da empresa"
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contato_responsavel">Contato Responsável</Label>
-                <Input
-                  id="contato_responsavel"
-                  value={formData.contato_responsavel}
-                  onChange={(e) => handleInputChange("contato_responsavel", e.target.value)}
-                  placeholder="Nome do responsável pelo contato"
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="ativo"
-                  checked={formData.ativo}
-                  onCheckedChange={(checked) => handleInputChange("ativo", checked)}
-                />
-                <Label htmlFor="ativo">Cliente ativo</Label>
               </div>
 
               <div className="flex gap-4">

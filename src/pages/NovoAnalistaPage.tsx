@@ -1,11 +1,12 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DashboardLayout from "@/components/DashboardLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
+import { X } from "lucide-react"
 import { Save, ArrowLeft, UserCheck } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
@@ -18,10 +19,19 @@ const NovoAnalistaPage = () => {
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
-    especialidade: "",
-    nivel: "",
-    ativo: true
+    clientes_atendidos: [] as string[]
   })
+  
+  const [clientes, setClientes] = useState<Array<{id: string, nome: string}>>([])
+  const [clienteInput, setClienteInput] = useState("")
+
+  useEffect(() => {
+    const fetchClientes = async () => {
+      const { data } = await supabase.from('clientes').select('id, nome')
+      if (data) setClientes(data)
+    }
+    fetchClientes()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,8 +71,25 @@ const NovoAnalistaPage = () => {
     }
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const adicionarCliente = (clienteNome: string) => {
+    if (clienteNome && !formData.clientes_atendidos.includes(clienteNome)) {
+      setFormData(prev => ({ 
+        ...prev, 
+        clientes_atendidos: [...prev.clientes_atendidos, clienteNome] 
+      }))
+    }
+    setClienteInput("")
+  }
+
+  const removerCliente = (clienteNome: string) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      clientes_atendidos: prev.clientes_atendidos.filter(c => c !== clienteNome) 
+    }))
   }
 
   return (
@@ -93,7 +120,7 @@ const NovoAnalistaPage = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="nome">Nome Completo *</Label>
                   <Input
@@ -118,44 +145,47 @@ const NovoAnalistaPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="especialidade">Especialidade</Label>
-                  <Select value={formData.especialidade} onValueChange={(value) => handleInputChange("especialidade", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a especialidade" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border z-50">
-                      <SelectItem value="vistoria-veiculos">Vistoria de Veículos</SelectItem>
-                      <SelectItem value="sinistros">Sinistros</SelectItem>
-                      <SelectItem value="recompra">Recompra</SelectItem>
-                      <SelectItem value="manutencao">Manutenção</SelectItem>
-                      <SelectItem value="desmobilizacao">Desmobilização</SelectItem>
-                      <SelectItem value="geral">Geral</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Clientes que Atende</Label>
+                  <div className="flex gap-2">
+                    <Select value={clienteInput} onValueChange={setClienteInput}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Selecione ou digite um cliente" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border z-50">
+                        {clientes.map((cliente) => (
+                          <SelectItem key={cliente.id} value={cliente.nome}>{cliente.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => adicionarCliente(clienteInput)}
+                      disabled={!clienteInput}
+                    >
+                      Adicionar
+                    </Button>
+                  </div>
+                  <Input
+                    placeholder="Ou digite o nome de um novo cliente"
+                    value={clienteInput}
+                    onChange={(e) => setClienteInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), adicionarCliente(clienteInput))}
+                  />
+                  {formData.clientes_atendidos.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.clientes_atendidos.map((cliente) => (
+                        <Badge key={cliente} variant="secondary" className="flex items-center gap-1">
+                          {cliente}
+                          <X 
+                            className="h-3 w-3 cursor-pointer" 
+                            onClick={() => removerCliente(cliente)}
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="nivel">Nível</Label>
-                  <Select value={formData.nivel} onValueChange={(value) => handleInputChange("nivel", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o nível" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border z-50">
-                      <SelectItem value="junior">Junior</SelectItem>
-                      <SelectItem value="pleno">Pleno</SelectItem>
-                      <SelectItem value="senior">Senior</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="ativo"
-                  checked={formData.ativo}
-                  onCheckedChange={(checked) => handleInputChange("ativo", checked)}
-                />
-                <Label htmlFor="ativo">Analista ativo</Label>
               </div>
 
               <div className="flex gap-4">
