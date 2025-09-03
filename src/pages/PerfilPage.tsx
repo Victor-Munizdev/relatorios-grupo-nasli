@@ -1,33 +1,126 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DashboardLayout from "@/components/DashboardLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, Mail, Lock, Camera, Save } from "lucide-react"
+import { User, Mail, Lock, Camera, Save, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/integrations/supabase/client"
 
 const PerfilPage = () => {
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [user, setUser] = useState<any>(null)
   const [profileData, setProfileData] = useState({
-    nome: "Usuário Exemplo",
-    email: "usuario@exemplo.com",
+    nome: "",
+    email: "",
     senha: "",
     foto: ""
   })
+
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      setUser(user)
+
+      // Buscar dados do perfil na tabela usuarios
+      const { data: userData, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (error && error.code !== 'PGRST116') {
+        throw error
+      }
+
+      if (userData) {
+        setProfileData({
+          nome: userData.nome || "",
+          email: userData.email || user.email || "",
+          senha: "",
+          foto: ""
+        })
+      } else {
+        // Criar registro na tabela usuarios se não existir
+        const { error: insertError } = await supabase
+          .from('usuarios')
+          .insert({
+            id: user.id,
+            nome: user.user_metadata?.nome || user.email?.split('@')[0] || "",
+            email: user.email || "",
+            cargo: 'Usuário'
+          })
+
+        if (insertError) {
+          console.error('Erro ao criar usuário:', insertError)
+        } else {
+          setProfileData({
+            nome: user.user_metadata?.nome || user.email?.split('@')[0] || "",
+            email: user.email || "",
+            senha: "",
+            foto: ""
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar os dados do perfil.",
+        variant: "destructive",
+      })
+    } finally {
+      setInitialLoading(false)
+    }
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }))
   }
 
   const handleSave = async () => {
+    if (!user) return
+    
     setLoading(true)
     try {
-      // Aqui seria a integração com Supabase para atualizar o perfil
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulação
+      // Atualizar tabela usuarios
+      const { error: updateError } = await supabase
+        .from('usuarios')
+        .update({
+          nome: profileData.nome,
+          email: profileData.email,
+        })
+        .eq('id', user.id)
+
+      if (updateError) throw updateError
+
+      // Atualizar email no auth se mudou
+      if (profileData.email !== user.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: profileData.email
+        })
+        if (emailError) throw emailError
+      }
+
+      // Atualizar senha se foi fornecida
+      if (profileData.senha) {
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: profileData.senha
+        })
+        if (passwordError) throw passwordError
+        setProfileData(prev => ({ ...prev, senha: "" }))
+      }
       
       toast({
         title: "Sucesso",
@@ -35,10 +128,11 @@ const PerfilPage = () => {
       })
       
       setIsEditing(false)
-    } catch (error) {
+      await loadUserData() // Recarregar dados
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Não foi possível atualizar o perfil.",
+        description: error.message || "Não foi possível atualizar o perfil.",
         variant: "destructive",
       })
     } finally {
@@ -46,15 +140,53 @@ const PerfilPage = () => {
     }
   }
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setProfileData(prev => ({ ...prev, foto: e.target?.result as string }))
-      }
-      reader.readAsDataURL(file)
+    if (!file || !user) return
+
+    try {
+      setLoading(true)
+      
+      // Upload para o Supabase Storage
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${user.id}/avatar.${fileExt}`
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true })
+
+      if (uploadError) throw uploadError
+
+      // Obter URL pública
+      const { data } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      setProfileData(prev => ({ ...prev, foto: data.publicUrl }))
+      
+      toast({
+        title: "Sucesso",
+        description: "Foto atualizada com sucesso!",
+      })
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível fazer upload da foto.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
     }
+  }
+
+  if (initialLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
