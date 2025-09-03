@@ -139,7 +139,7 @@ const NovoAnalistaPage = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="email@exemplo.com"
+                    placeholder="email@empresa.com"
                     required
                   />
                 </div>

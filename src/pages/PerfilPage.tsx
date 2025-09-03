@@ -45,11 +45,27 @@ const PerfilPage = () => {
       }
 
       if (userData) {
+        // Tentar carregar foto do perfil do storage
+        const { data: avatarData } = await supabase.storage
+          .from('avatars')
+          .list(`${user.id}/`, {
+            limit: 1,
+            sortBy: { column: 'created_at', order: 'desc' }
+          })
+        
+        let fotoUrl = ""
+        if (avatarData && avatarData.length > 0) {
+          const { data } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(`${user.id}/${avatarData[0].name}`)
+          fotoUrl = data.publicUrl
+        }
+
         setProfileData({
           nome: userData.nome || "",
           email: userData.email || user.email || "",
           senha: "",
-          foto: ""
+          foto: fotoUrl
         })
       } else {
         // Criar registro na tabela usuarios se não existir
@@ -147,13 +163,27 @@ const PerfilPage = () => {
     try {
       setLoading(true)
       
+      console.log('Iniciando upload da foto:', file.name, file.size)
+      
       // Upload para o Supabase Storage
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}/avatar.${fileExt}`
       
-      const { error: uploadError } = await supabase.storage
+      console.log('Nome do arquivo:', fileName)
+      
+      // Primeiro, tentar deletar a foto antiga se existir
+      await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true })
+        .remove([fileName])
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type
+        })
+
+      console.log('Resultado do upload:', { uploadData, uploadError })
 
       if (uploadError) throw uploadError
 
@@ -162,6 +192,8 @@ const PerfilPage = () => {
         .from('avatars')
         .getPublicUrl(fileName)
 
+      console.log('URL pública:', data.publicUrl)
+
       setProfileData(prev => ({ ...prev, foto: data.publicUrl }))
       
       toast({
@@ -169,6 +201,7 @@ const PerfilPage = () => {
         description: "Foto atualizada com sucesso!",
       })
     } catch (error: any) {
+      console.error('Erro no upload:', error)
       toast({
         title: "Erro",
         description: error.message || "Não foi possível fazer upload da foto.",
