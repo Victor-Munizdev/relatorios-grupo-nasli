@@ -52,6 +52,13 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				login: {
+					bg: 'hsl(var(--login-bg))',
+					green: 'hsl(var(--login-green))',
+					card: 'hsl(var(--login-card))',
+					'input-bg': 'hsl(var(--login-input-bg))',
+					'text-muted': 'hsl(var(--login-text-muted))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
