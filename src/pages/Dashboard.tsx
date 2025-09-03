@@ -1,4 +1,4 @@
-import { useState } from "react";
+import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, FileText, TrendingUp, Users, AlertTriangle, Activity } from "lucide-react";
@@ -10,8 +10,8 @@ import AnaliseOrdens from "@/components/reports/AnaliseOrdens";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <DashboardLayout>
+      <div className="space-y-8">{/* ... keep existing code */}
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-primary">
@@ -115,7 +115,7 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
