@@ -17,6 +17,10 @@ import NovaOSPage from "./pages/NovaOSPage";
 import NovaAvariaPage from "./pages/NovaAvariaPage";
 import OrdensServicoPage from "./pages/OrdensServicoPage";
 import AvariasPage from "./pages/AvariasPage";
+import ModelosLaudosPage from "./pages/ModelosLaudosPage";
+import NovoModeloLaudoPage from "./pages/NovoModeloLaudoPage";
+import TiposServicosPage from "./pages/TiposServicosPage";
+import NovoTipoServicoPage from "./pages/NovoTipoServicoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +44,10 @@ const App = () => (
             <Route path="/ordens-servico/nova" element={<NovaOSPage />} />
             <Route path="/avarias" element={<AvariasPage />} />
             <Route path="/avarias/nova" element={<NovaAvariaPage />} />
+            <Route path="/modelos-laudos" element={<ModelosLaudosPage />} />
+            <Route path="/modelos-laudos/novo" element={<NovoModeloLaudoPage />} />
+            <Route path="/tipos-servicos" element={<TiposServicosPage />} />
+            <Route path="/tipos-servicos/novo" element={<NovoTipoServicoPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/configuracoes" element={<ConfiguracoesPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

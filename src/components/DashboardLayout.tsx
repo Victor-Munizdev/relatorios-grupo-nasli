@@ -2,7 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@/components/ui/dropdown-menu"
-import { User, LogOut, Settings, Plus, Eye, Edit, Users, UserCheck, FileText, AlertTriangle, ChevronDown } from "lucide-react"
+import { User, LogOut, Settings, Plus, Eye, Users, UserCheck, FileText, AlertTriangle, ChevronDown, BookOpen, Wrench } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { useEffect, useState } from "react"
@@ -122,10 +122,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <Eye className="h-4 w-4" />
                     Visualizar Clientes
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/clientes")} className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    Editar Clientes
-                  </DropdownMenuItem>
                   
                   <DropdownMenuSeparator />
                   
@@ -141,10 +137,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <DropdownMenuItem onClick={() => navigate("/analistas")} className="flex items-center gap-2">
                     <Eye className="h-4 w-4" />
                     Visualizar Analistas
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/analistas")} className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    Editar Analistas
                   </DropdownMenuItem>
                   
                   <DropdownMenuSeparator />
@@ -162,10 +154,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <Eye className="h-4 w-4" />
                     Visualizar O.S.
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/ordens-servico")} className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    Editar O.S.
-                  </DropdownMenuItem>
                   
                   <DropdownMenuSeparator />
                   
@@ -182,9 +170,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <Eye className="h-4 w-4" />
                     Visualizar Avarias
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/avarias")} className="flex items-center gap-2">
-                    <Edit className="h-4 w-4" />
-                    Editar Avarias
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {/* Modelos de Laudos */}
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Modelos de Laudos
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate("/modelos-laudos/novo")} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Cadastrar Modelo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/modelos-laudos")} className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    Visualizar Modelos
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {/* Tipos de Serviços */}
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    <Wrench className="h-4 w-4" />
+                    Tipos de Serviços
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigate("/tipos-servicos/novo")} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Cadastrar Tipo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/tipos-servicos")} className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    Visualizar Tipos
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
